@@ -24,4 +24,8 @@ class ProbabilisticParseNode(ParseNode):
             self.__log_probability = param2
 
     def getLogProbability(self) -> float:
+        """
+        Accessor for the logProbability attribute.
+        :return: logProbability attribute.
+        """
         return self.__log_probability

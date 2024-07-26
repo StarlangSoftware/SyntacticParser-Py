@@ -20,6 +20,13 @@ class ProbabilisticContextFreeGrammar(ContextFreeGrammar):
                      rule_file_name: str,
                      dictionary_file_name: str,
                      min_count: int):
+        """
+        Constructor for the ProbabilisticContextFreeGrammar class. Reads the rules from the rule file, lexicon rules from
+        the dictionary file and sets the minimum frequency parameter.
+        :param rule_file_name: File name for the rule file.
+        :param dictionary_file_name: File name for the lexicon file.
+        :param min_count: Minimum frequency parameter.
+        """
         self.rules = []
         self.rules_right_sorted = []
         self.dictionary = CounterHashMap()
@@ -37,6 +44,13 @@ class ProbabilisticContextFreeGrammar(ContextFreeGrammar):
         self.min_count = min_count
 
     def constructor3(self, tree_bank: TreeBank, min_count: int):
+        """
+        Another constructor for the ProbabilisticContextFreeGrammar class. Constructs the lexicon from the leaf nodes of
+        the trees in the given treebank. Extracts rules from the non-leaf nodes of the trees in the given treebank. Also
+        sets the minimum frequency parameter.
+        :param tree_bank: Treebank containing the constituency trees.
+        :param min_count: Minimum frequency parameter.
+        """
         self.rules = []
         self.rules_right_sorted = []
         self.dictionary = CounterHashMap()
@@ -73,6 +87,14 @@ class ProbabilisticContextFreeGrammar(ContextFreeGrammar):
 
     @staticmethod
     def toRule(parse_node: ParseNode, trim: bool) -> ProbabilisticRule:
+        """
+        Converts a parse node in a tree to a rule. The symbol in the parse node will be the symbol on the leaf side of the
+        rule, the symbols in the child nodes will be the symbols on the right hand side of the rule.
+        :param parse_node: Parse node for which a rule will be created.
+        :param trim: If true, the tags will be trimmed. If the symbol's data contains '-' or '=', this method trims all
+                     characters after those characters.
+        :return: A new rule constructed from a parse node and its children.
+        """
         right = []
         if trim:
             left = parse_node.getData().trimSymbol()
@@ -90,6 +112,10 @@ class ProbabilisticContextFreeGrammar(ContextFreeGrammar):
         return ProbabilisticRule(left, right)
 
     def addRules(self, parse_node: ParseNode):
+        """
+        Recursive method to generate all rules from a subtree rooted at the given node.
+        :param parse_node: Root node of the subtree.
+        """
         new_rule = ProbabilisticContextFreeGrammar.toRule(parse_node, True)
         if new_rule is not None:
             existed_rule = self.searchRule(new_rule)
@@ -105,6 +131,11 @@ class ProbabilisticContextFreeGrammar(ContextFreeGrammar):
                 self.addRules(child_node)
 
     def probabilityOfParseNode(self, parse_node: ParseNode) -> float:
+        """
+        Calculates the probability of a parse node.
+        :param parse_node: Parse node for which probability is calculated.
+        :return: Probability of a parse node.
+        """
         _sum = 0.0
         if parse_node.numberOfChildren() > 0:
             rule = ProbabilisticContextFreeGrammar.toRule(parse_node, True)
@@ -118,9 +149,20 @@ class ProbabilisticContextFreeGrammar(ContextFreeGrammar):
         return _sum
 
     def probabilityOfParseTree(self, parse_tree: ParseTree) -> float:
+        """
+        Calculates the probability of a parse tree.
+        :param parse_tree: Parse tree for which probability is calculated.
+        :return: Probability of the parse tree.
+        """
         return self.probabilityOfParseNode(parse_tree.getRoot())
 
     def removeSingleNonTerminalFromRightHandSide(self):
+        """
+        In conversion to Chomsky Normal Form, rules like X -> Y are removed and new rules for every rule as Y -> beta are
+        replaced with X -> beta. The method first identifies all X -> Y rules. For every such rule, all rules Y -> beta
+        are identified. For every such rule, the method adds a new rule X -> beta. Every Y -> beta rule is then deleted.
+        The method also calculates the probability of the new rules based on the previous rules.
+        """
         non_terminal_list = []
         remove_candidate = self.getSingleNonTerminalCandidateToRemove(non_terminal_list)
         while remove_candidate is not None:
@@ -138,6 +180,11 @@ class ProbabilisticContextFreeGrammar(ContextFreeGrammar):
             remove_candidate = self.getSingleNonTerminalCandidateToRemove(non_terminal_list)
 
     def updateMultipleNonTerminalFromRightHandSide(self):
+        """
+        In conversion to Chomsky Normal Form, rules like A -> BC... are replaced with A -> X1... and X1 -> BC. This
+        method determines such rules and for every such rule, it adds new rule X1->BC and updates rule A->BC to A->X1.
+        The method sets the probability of the rules X1->BC to 1, and calculates the probability of the rules A -> X1...
+        """
         new_variable_count = 0
         update_candidate = self.getMultipleNonTerminalCandidateToUpdate()
         while update_candidate is not None:
@@ -151,6 +198,11 @@ class ProbabilisticContextFreeGrammar(ContextFreeGrammar):
             new_variable_count = new_variable_count + 1
 
     def convertToChomskyNormalForm(self):
+        """
+        The method converts the grammar into Chomsky normal form. First, rules like X -> Y are removed and new rules for
+        every rule as Y -> beta are replaced with X -> beta. Second, rules like A -> BC... are replaced with A -> X1...
+        and X1 -> BC.
+        """
         self.removeSingleNonTerminalFromRightHandSide()
         self.updateMultipleNonTerminalFromRightHandSide()
         self.rules.sort(key=cmp_to_key(self.ruleComparator))

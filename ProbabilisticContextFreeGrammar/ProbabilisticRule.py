@@ -12,6 +12,11 @@ class ProbabilisticRule(Rule):
     __count: int
 
     def constructor6(self, rule: str):
+        """
+        Constructor for any probabilistic rule from a string. The string is of the form X -> .... [probability] The
+        method constructs left hand side symbol and right hand side symbol(s) from the input string.
+        :param rule: String containing the rule. The string is of the form X -> .... [probability]
+        """
         prob = rule[rule.find("[") + 1:rule.find("]")].strip()
         left = rule[0:rule.find("->")].strip()
         right = rule[rule.find("->") + 2:rule.find("[")].strip()
@@ -40,16 +45,35 @@ class ProbabilisticRule(Rule):
             self.constructor6(param1)
 
     def getProbability(self) -> float:
+        """
+        Accessor for the probability attribute.
+        :return: Probability attribute.
+        """
         return self.__probability
 
     def increment(self):
+        """
+        Increments the count attribute.
+        """
         self.__count = self.__count + 1
 
     def normalizeProbability(self, total: int):
+        """
+        Calculates the probability from count and the given total value.
+        :param total: Value used for calculating the probability.
+        """
         self.__probability = self.__count / total
 
     def getCount(self) -> int:
+        """
+        Accessor for the count attribute.
+        :return: Count attribute.
+        """
         return self.__count
 
     def __str__(self) -> str:
+        """
+        Converts the rule to the form X -> ... [probability]
+        :return: String form of the rule in the form of X -> ... [probability]
+        """
         return super().__str__() + "[" + str(self.__probability) + "]"

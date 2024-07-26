@@ -15,6 +15,13 @@ from SyntacticParser.PartialParseList import PartialParseList
 
 class ProbabilisticCYKParser(ProbabilisticParser):
     def parse(self, pcfg: ProbabilisticContextFreeGrammar, sentence: Sentence) -> [ParseTree]:
+        """
+        Constructs an array of most probable parse trees for a given sentence according to the given grammar. CYK parser
+        is based on a dynamic programming algorithm.
+        :param pcfg: Probabilistic context free grammar used in parsing.
+        :param sentence: Sentence to be parsed.
+        :return: Array list of most probable parse trees for the given sentence.
+        """
         parse_trees = []
         back_up = Sentence()
         for i in range(0, sentence.wordCount()):
