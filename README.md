@@ -1,3 +1,12 @@
+# SyntacticParser
+
+This tool analyzes the syntactic structure of a sentence by breaking it down into components and establishing the grammatical relations between said components.
+
+Video Lectures
+============
+
+[<img src="https://github.com/StarlangSoftware/SyntacticParser/blob/master/video1.jpg" width="50%">](https://youtu.be/4erjWXDlJRI)[<img src="https://github.com/StarlangSoftware/SyntacticParser/blob/master/video2.jpg" width="50%">](https://youtu.be/XwmCs21kosU)[<img src="https://github.com/StarlangSoftware/SyntacticParser/blob/master/video3.jpg" width="50%">](https://youtu.be/2pWtrpLGYTA)[<img src=video4.jpg width="50%">](https://youtu.be/ajF3p1p6yMM)
+
 For Developers
 ============
 
